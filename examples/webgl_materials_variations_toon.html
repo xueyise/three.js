@@ -12,6 +12,7 @@
 		<div id="info"><a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - Toon Material Variantions with OutlineEffect</div>
 
 		<script type="module">
+
 			import * as THREE from '../build/three.module.js';
 
 			import Stats from './jsm/libs/stats.module.js';
@@ -84,9 +85,7 @@
 								bumpScale: bumpScale,
 								color: diffuseColor,
 								specular: specularColor,
-								reflectivity: beta,
 								shininess: specularShininess,
-								envMap: alphaIndex % 2 === 0 ? null : reflectionCube
 							} );
 
 							var mesh = new THREE.Mesh( geometry, material );
@@ -125,8 +124,8 @@
 				addLabel( "-shininess", new THREE.Vector3( - 350, 0, 0 ) );
 				addLabel( "+shininess", new THREE.Vector3( 350, 0, 0 ) );
 
-				addLabel( "-specular, -reflectivity", new THREE.Vector3( 0, - 300, 0 ) );
-				addLabel( "+specular, +reflectivity", new THREE.Vector3( 0, 300, 0 ) );
+				addLabel( "-specular", new THREE.Vector3( 0, - 300, 0 ) );
+				addLabel( "+specular", new THREE.Vector3( 0, 300, 0 ) );
 
 				addLabel( "-diffuse", new THREE.Vector3( 0, 0, - 300 ) );
 				addLabel( "+diffuse", new THREE.Vector3( 0, 0, 300 ) );
