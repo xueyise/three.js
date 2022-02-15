@@ -1,27 +1,27 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+import { UITabbedPanel, UISpan } from './libs/ui.js';
 
-var Sidebar = function ( editor ) {
+import { SidebarScene } from './Sidebar.Scene.js';
+import { SidebarProperties } from './Sidebar.Properties.js';
+import { SidebarScript } from './Sidebar.Script.js';
+import { SidebarAnimation } from './Sidebar.Animation.js';
+import { SidebarProject } from './Sidebar.Project.js';
+import { SidebarSettings } from './Sidebar.Settings.js';
 
-	var strings = editor.strings;
+function Sidebar( editor ) {
 
-	var container = new UI.TabbedPanel();
+	const strings = editor.strings;
+
+	const container = new UITabbedPanel();
 	container.setId( 'sidebar' );
 
-	var scene = new UI.Span().add(
-		new Sidebar.Scene( editor ),
-		new Sidebar.Properties( editor ),
-		new Sidebar.Animation( editor ),
-		new Sidebar.Script( editor )
+	const scene = new UISpan().add(
+		new SidebarScene( editor ),
+		new SidebarProperties( editor ),
+		new SidebarAnimation( editor ),
+		new SidebarScript( editor )
 	);
-
-	var project = new Sidebar.Project( editor );
-
-	var settings = new UI.Span().add(
-		new Sidebar.Settings( editor ),
-		new Sidebar.History( editor )
-	);
+	const project = new SidebarProject( editor );
+	const settings = new SidebarSettings( editor );
 
 	container.addTab( 'scene', strings.getKey( 'sidebar/scene' ), scene );
 	container.addTab( 'project', strings.getKey( 'sidebar/project' ), project );
@@ -30,4 +30,6 @@ var Sidebar = function ( editor ) {
 
 	return container;
 
-};
+}
+
+export { Sidebar };

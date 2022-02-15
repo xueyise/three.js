@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="utf-8" />
 		<base href="../../../" />
-		<script src="list.js"></script>
 		<script src="page.js"></script>
 		<link type="text/css" rel="stylesheet" href="page.css" />
 	</head>
@@ -17,12 +16,12 @@
 		Loader support ascii and (compressed) binary.
 		</p>
 
-		<h2>Example</h2>
+		<h2>Code Example</h2>
 
 		<code>
 
 		// instantiate a loader
-		var loader = new THREE.PCDLoader();
+		const loader = new PCDLoader();
 
 		// load a resource
 		loader.load(
@@ -49,8 +48,10 @@
 		);
 		</code>
 
-		[example:webgl_loader_pcd]
-
+		<h2>Examples</h2>
+		<p>
+			[example:webgl_loader_pcd]
+		</p>
 
 		<h2>Constructor</h2>
 
@@ -73,11 +74,11 @@
 		<h2>Methods</h2>
 		<p>See the base [page:Loader] class for common methods.</p>
 
-		<h3>[method:null load]( [param:String url], [param:Function onLoad], [param:Function onProgress], [param:Function onError] )</h3>
+		<h3>[method:undefined load]( [param:String url], [param:Function onLoad], [param:Function onProgress], [param:Function onError] )</h3>
 		<p>
 		[page:String url] — A string containing the path/URL of the <em>.pcd</em> file.<br />
 		[page:Function onLoad] — (optional) A function to be called after loading is successfully completed. The function receives loaded [page:Object3D] as an argument.<br />
-		[page:Function onProgress] — (optional) A function to be called while the loading is in progress. The argument will be the XMLHttpRequest instance, which contains [page:Integer total] and [page:Integer loaded] bytes.<br />
+		[page:Function onProgress] — (optional) A function to be called while the loading is in progress. The argument will be the XMLHttpRequest instance, which contains [page:Integer total] and [page:Integer loaded] bytes. If the server does not set the Content-Length header; .[page:Integer total] will be 0.<br />
 		[page:Function onError] — (optional) A function to be called if an error occurs during loading. The function receives the error as an argument.<br />
 		</p>
 		<p>
@@ -99,7 +100,7 @@
 		<h2>Source</h2>
 
 		<p>
-			[link:https://github.com/mrdoob/three.js/blob/master/examples/js/loaders/PCDLoader.js examples/js/loaders/PCDLoader.js]
+			[link:https://github.com/mrdoob/three.js/blob/master/examples/jsm/loaders/PCDLoader.js examples/jsm/loaders/PCDLoader.js]
 		</p>
 	</body>
 </html>

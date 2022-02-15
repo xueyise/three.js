@@ -1,26 +1,26 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+import * as THREE from 'three';
 
-Menubar.Examples = function ( editor ) {
+import { UIPanel, UIRow } from './libs/ui.js';
 
-	var strings = editor.strings;
+function MenubarExamples( editor ) {
 
-	var container = new UI.Panel();
+	const strings = editor.strings;
+
+	const container = new UIPanel();
 	container.setClass( 'menu' );
 
-	var title = new UI.Panel();
+	const title = new UIPanel();
 	title.setClass( 'title' );
 	title.setTextContent( strings.getKey( 'menubar/examples' ) );
 	container.add( title );
 
-	var options = new UI.Panel();
+	const options = new UIPanel();
 	options.setClass( 'options' );
 	container.add( options );
 
 	// Examples
 
-	var items = [
+	const items = [
 		{ title: 'menubar/examples/Arkanoid', file: 'arkanoid.app.json' },
 		{ title: 'menubar/examples/Camera', file: 'camera.app.json' },
 		{ title: 'menubar/examples/Particles', file: 'particles.app.json' },
@@ -28,15 +28,15 @@ Menubar.Examples = function ( editor ) {
 		{ title: 'menubar/examples/Shaders', file: 'shaders.app.json' }
 	];
 
-	var loader = new THREE.FileLoader();
+	const loader = new THREE.FileLoader();
 
-	for ( var i = 0; i < items.length; i ++ ) {
+	for ( let i = 0; i < items.length; i ++ ) {
 
 		( function ( i ) {
 
-			var item = items[ i ];
+			const item = items[ i ];
 
-			var option = new UI.Row();
+			const option = new UIRow();
 			option.setClass( 'option' );
 			option.setTextContent( strings.getKey( item.title ) );
 			option.onClick( function () {
@@ -61,4 +61,6 @@ Menubar.Examples = function ( editor ) {
 
 	return container;
 
-};
+}
+
+export { MenubarExamples };

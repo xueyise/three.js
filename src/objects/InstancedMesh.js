@@ -1,50 +1,66 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-import { BufferAttribute } from '../core/BufferAttribute.js';
+import { InstancedBufferAttribute } from '../core/InstancedBufferAttribute.js';
 import { Mesh } from './Mesh.js';
 import { Matrix4 } from '../math/Matrix4.js';
 
-var _instanceLocalMatrix = new Matrix4();
-var _instanceWorldMatrix = new Matrix4();
+const _instanceLocalMatrix = /*@__PURE__*/ new Matrix4();
+const _instanceWorldMatrix = /*@__PURE__*/ new Matrix4();
 
-var _instanceIntersects = [];
+const _instanceIntersects = [];
 
-var _mesh = new Mesh();
+const _mesh = /*@__PURE__*/ new Mesh();
 
-function InstancedMesh( geometry, material, count ) {
+class InstancedMesh extends Mesh {
 
-	Mesh.call( this, geometry, material );
+	constructor( geometry, material, count ) {
 
-	this.instanceMatrix = new BufferAttribute( new Float32Array( count * 16 ), 16 );
+		super( geometry, material );
 
-	this.count = count;
+		this.instanceMatrix = new InstancedBufferAttribute( new Float32Array( count * 16 ), 16 );
+		this.instanceColor = null;
 
-}
+		this.count = count;
 
-InstancedMesh.prototype = Object.assign( Object.create( Mesh.prototype ), {
+		this.frustumCulled = false;
 
-	constructor: InstancedMesh,
+	}
 
-	isInstancedMesh: true,
+	copy( source ) {
 
-	getMatrixAt: function ( index, matrix ) {
+		super.copy( source );
+
+		this.instanceMatrix.copy( source.instanceMatrix );
+
+		if ( source.instanceColor !== null ) this.instanceColor = source.instanceColor.clone();
+
+		this.count = source.count;
+
+		return this;
+
+	}
+
+	getColorAt( index, color ) {
+
+		color.fromArray( this.instanceColor.array, index * 3 );
+
+	}
+
+	getMatrixAt( index, matrix ) {
 
 		matrix.fromArray( this.instanceMatrix.array, index * 16 );
 
-	},
+	}
 
-	raycast: function ( raycaster, intersects ) {
+	raycast( raycaster, intersects ) {
 
-		var matrixWorld = this.matrixWorld;
-		var raycastTimes = this.count;
+		const matrixWorld = this.matrixWorld;
+		const raycastTimes = this.count;
 
 		_mesh.geometry = this.geometry;
 		_mesh.material = this.material;
 
 		if ( _mesh.material === undefined ) return;
 
-		for ( var instanceId = 0; instanceId < raycastTimes; instanceId ++ ) {
+		for ( let instanceId = 0; instanceId < raycastTimes; instanceId ++ ) {
 
 			// calculate the world matrix for each instance
 
@@ -60,31 +76,51 @@ InstancedMesh.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
 			// process the result of raycast
 
-			if ( _instanceIntersects.length > 0 ) {
+			for ( let i = 0, l = _instanceIntersects.length; i < l; i ++ ) {
 
-				_instanceIntersects[ 0 ].instanceId = instanceId;
-				_instanceIntersects[ 0 ].object = this;
-
-				intersects.push( _instanceIntersects[ 0 ] );
-
-				_instanceIntersects.length = 0;
+				const intersect = _instanceIntersects[ i ];
+				intersect.instanceId = instanceId;
+				intersect.object = this;
+				intersects.push( intersect );
 
 			}
 
+			_instanceIntersects.length = 0;
+
 		}
-
-	},
-
-	setMatrixAt: function ( index, matrix ) {
-
-		matrix.toArray( this.instanceMatrix.array, index * 16 );
-
-	},
-
-	updateMorphTargets: function () {
 
 	}
 
-} );
+	setColorAt( index, color ) {
+
+		if ( this.instanceColor === null ) {
+
+			this.instanceColor = new InstancedBufferAttribute( new Float32Array( this.instanceMatrix.count * 3 ), 3 );
+
+		}
+
+		color.toArray( this.instanceColor.array, index * 3 );
+
+	}
+
+	setMatrixAt( index, matrix ) {
+
+		matrix.toArray( this.instanceMatrix.array, index * 16 );
+
+	}
+
+	updateMorphTargets() {
+
+	}
+
+	dispose() {
+
+		this.dispatchEvent( { type: 'dispose' } );
+
+	}
+
+}
+
+InstancedMesh.prototype.isInstancedMesh = true;
 
 export { InstancedMesh };

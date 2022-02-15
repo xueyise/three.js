@@ -1,11 +1,6 @@
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- */
+import * as THREE from 'three';
 
-THREE.EditorControls = function ( object, domElement ) {
+function EditorControls( object, domElement ) {
 
 	// API
 
@@ -117,11 +112,66 @@ THREE.EditorControls = function ( object, domElement ) {
 
 	};
 
+	//
+
+	function onPointerDown( event ) {
+
+		if ( scope.enabled === false ) return;
+
+		switch ( event.pointerType ) {
+
+			case 'mouse':
+			case 'pen':
+				onMouseDown( event );
+				break;
+
+			// TODO touch
+
+		}
+
+		domElement.ownerDocument.addEventListener( 'pointermove', onPointerMove );
+		domElement.ownerDocument.addEventListener( 'pointerup', onPointerUp );
+
+	}
+
+	function onPointerMove( event ) {
+
+		if ( scope.enabled === false ) return;
+
+		switch ( event.pointerType ) {
+
+			case 'mouse':
+			case 'pen':
+				onMouseMove( event );
+				break;
+
+			// TODO touch
+
+		}
+
+	}
+
+	function onPointerUp( event ) {
+
+		switch ( event.pointerType ) {
+
+			case 'mouse':
+			case 'pen':
+				onMouseUp();
+				break;
+
+			// TODO touch
+
+		}
+
+		domElement.ownerDocument.removeEventListener( 'pointermove', onPointerMove );
+		domElement.ownerDocument.removeEventListener( 'pointerup', onPointerUp );
+
+	}
+
 	// mouse
 
 	function onMouseDown( event ) {
-
-		if ( scope.enabled === false ) return;
 
 		if ( event.button === 0 ) {
 
@@ -139,16 +189,9 @@ THREE.EditorControls = function ( object, domElement ) {
 
 		pointerOld.set( event.clientX, event.clientY );
 
-		domElement.addEventListener( 'mousemove', onMouseMove, false );
-		domElement.addEventListener( 'mouseup', onMouseUp, false );
-		domElement.addEventListener( 'mouseout', onMouseUp, false );
-		domElement.addEventListener( 'dblclick', onMouseUp, false );
-
 	}
 
 	function onMouseMove( event ) {
-
-		if ( scope.enabled === false ) return;
 
 		pointer.set( event.clientX, event.clientY );
 
@@ -173,18 +216,15 @@ THREE.EditorControls = function ( object, domElement ) {
 
 	}
 
-	function onMouseUp( /* event */ ) {
-
-		domElement.removeEventListener( 'mousemove', onMouseMove, false );
-		domElement.removeEventListener( 'mouseup', onMouseUp, false );
-		domElement.removeEventListener( 'mouseout', onMouseUp, false );
-		domElement.removeEventListener( 'dblclick', onMouseUp, false );
+	function onMouseUp() {
 
 		state = STATE.NONE;
 
 	}
 
 	function onMouseWheel( event ) {
+
+		if ( scope.enabled === false ) return;
 
 		event.preventDefault();
 
@@ -201,23 +241,22 @@ THREE.EditorControls = function ( object, domElement ) {
 
 	this.dispose = function () {
 
-		domElement.removeEventListener( 'contextmenu', contextmenu, false );
-		domElement.removeEventListener( 'mousedown', onMouseDown, false );
-		domElement.removeEventListener( 'wheel', onMouseWheel, false );
+		domElement.removeEventListener( 'contextmenu', contextmenu );
+		domElement.removeEventListener( 'dblclick', onMouseUp );
+		domElement.removeEventListener( 'wheel', onMouseWheel );
 
-		domElement.removeEventListener( 'mousemove', onMouseMove, false );
-		domElement.removeEventListener( 'mouseup', onMouseUp, false );
-		domElement.removeEventListener( 'mouseout', onMouseUp, false );
-		domElement.removeEventListener( 'dblclick', onMouseUp, false );
+		domElement.removeEventListener( 'pointerdown', onPointerDown );
 
-		domElement.removeEventListener( 'touchstart', touchStart, false );
-		domElement.removeEventListener( 'touchmove', touchMove, false );
+		domElement.removeEventListener( 'touchstart', touchStart );
+		domElement.removeEventListener( 'touchmove', touchMove );
 
 	};
 
-	domElement.addEventListener( 'contextmenu', contextmenu, false );
-	domElement.addEventListener( 'mousedown', onMouseDown, false );
-	domElement.addEventListener( 'wheel', onMouseWheel, false );
+	domElement.addEventListener( 'contextmenu', contextmenu );
+	domElement.addEventListener( 'dblclick', onMouseUp );
+	domElement.addEventListener( 'wheel', onMouseWheel );
+
+	domElement.addEventListener( 'pointerdown', onPointerDown );
 
 	// touch
 
@@ -304,10 +343,12 @@ THREE.EditorControls = function ( object, domElement ) {
 
 	}
 
-	domElement.addEventListener( 'touchstart', touchStart, false );
-	domElement.addEventListener( 'touchmove', touchMove, false );
+	domElement.addEventListener( 'touchstart', touchStart );
+	domElement.addEventListener( 'touchmove', touchMove );
 
-};
+}
 
-THREE.EditorControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.EditorControls.prototype.constructor = THREE.EditorControls;
+EditorControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+EditorControls.prototype.constructor = EditorControls;
+
+export { EditorControls };

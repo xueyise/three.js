@@ -1,25 +1,24 @@
-/**
- * This class has been made to hold a slice of a volume data
- * @class
- * @author Valentin Demeusy / https://github.com/stity
- * @param   {Volume} volume    The associated volume
- * @param   {number}       [index=0] The index of the slice
- * @param   {string}       [axis='z']      For now only 'x', 'y' or 'z' but later it will change to a normal vector
- * @see Volume
- */
-
 import {
 	ClampToEdgeWrapping,
 	DoubleSide,
 	LinearFilter,
 	Mesh,
 	MeshBasicMaterial,
-	PlaneBufferGeometry,
+	PlaneGeometry,
 	Texture
-} from "../../../build/three.module.js";
-var VolumeSlice = function ( volume, index, axis ) {
+} from 'three';
 
-	var slice = this;
+/**
+ * This class has been made to hold a slice of a volume data
+ * @class
+ * @param   {Volume} volume    The associated volume
+ * @param   {number}       [index=0] The index of the slice
+ * @param   {string}       [axis='z']      For now only 'x', 'y' or 'z' but later it will change to a normal vector
+ * @see Volume
+ */
+function VolumeSlice( volume, index, axis ) {
+
+	const slice = this;
 	/**
 	 * @member {Volume} volume The associated volume
 	 */
@@ -64,10 +63,10 @@ var VolumeSlice = function ( volume, index, axis ) {
 	this.updateGeometry();
 
 
-	var canvasMap = new Texture( this.canvas );
+	const canvasMap = new Texture( this.canvas );
 	canvasMap.minFilter = LinearFilter;
 	canvasMap.wrapS = canvasMap.wrapT = ClampToEdgeWrapping;
-	var material = new MeshBasicMaterial( { map: canvasMap, side: DoubleSide, transparent: true } );
+	const material = new MeshBasicMaterial( { map: canvasMap, side: DoubleSide, transparent: true } );
 	/**
 	 * @member {Mesh} mesh The mesh ready to get used in the scene
 	 */
@@ -96,7 +95,7 @@ var VolumeSlice = function ( volume, index, axis ) {
 	 */
 
 
-};
+}
 
 VolumeSlice.prototype = {
 
@@ -114,7 +113,7 @@ VolumeSlice.prototype = {
 
 		}
 
-		var iLength = this.iLength,
+		const iLength = this.iLength,
 			jLength = this.jLength,
 			sliceAccess = this.sliceAccess,
 			volume = this.volume,
@@ -123,27 +122,27 @@ VolumeSlice.prototype = {
 
 
 		// get the imageData and pixel array from the canvas
-		var imgData = ctx.getImageData( 0, 0, iLength, jLength );
-		var data = imgData.data;
-		var volumeData = volume.data;
-		var upperThreshold = volume.upperThreshold;
-		var lowerThreshold = volume.lowerThreshold;
-		var windowLow = volume.windowLow;
-		var windowHigh = volume.windowHigh;
+		const imgData = ctx.getImageData( 0, 0, iLength, jLength );
+		const data = imgData.data;
+		const volumeData = volume.data;
+		const upperThreshold = volume.upperThreshold;
+		const lowerThreshold = volume.lowerThreshold;
+		const windowLow = volume.windowLow;
+		const windowHigh = volume.windowHigh;
 
 		// manipulate some pixel elements
-		var pixelCount = 0;
+		let pixelCount = 0;
 
 		if ( volume.dataType === 'label' ) {
 
 			//this part is currently useless but will be used when colortables will be handled
-			for ( var j = 0; j < jLength; j ++ ) {
+			for ( let j = 0; j < jLength; j ++ ) {
 
-				for ( var i = 0; i < iLength; i ++ ) {
+				for ( let i = 0; i < iLength; i ++ ) {
 
-					var label = volumeData[ sliceAccess( i, j ) ];
+					let label = volumeData[ sliceAccess( i, j ) ];
 					label = label >= this.colorMap.length ? ( label % this.colorMap.length ) + 1 : label;
-					var color = this.colorMap[ label ];
+					const color = this.colorMap[ label ];
 					data[ 4 * pixelCount ] = ( color >> 24 ) & 0xff;
 					data[ 4 * pixelCount + 1 ] = ( color >> 16 ) & 0xff;
 					data[ 4 * pixelCount + 2 ] = ( color >> 8 ) & 0xff;
@@ -156,12 +155,12 @@ VolumeSlice.prototype = {
 
 		} else {
 
-			for ( var j = 0; j < jLength; j ++ ) {
+			for ( let j = 0; j < jLength; j ++ ) {
 
-				for ( var i = 0; i < iLength; i ++ ) {
+				for ( let i = 0; i < iLength; i ++ ) {
 
-					var value = volumeData[ sliceAccess( i, j ) ];
-					var alpha = 0xff;
+					let value = volumeData[ sliceAccess( i, j ) ];
+					let alpha = 0xff;
 					//apply threshold
 					alpha = upperThreshold >= value ? ( lowerThreshold <= value ? alpha : 0 ) : 0;
 					//apply window level
@@ -179,6 +178,7 @@ VolumeSlice.prototype = {
 			}
 
 		}
+
 		ctx.putImageData( imgData, 0, 0 );
 		this.ctx.drawImage( canvas, 0, 0, iLength, jLength, 0, 0, this.canvas.width, this.canvas.height );
 
@@ -194,7 +194,7 @@ VolumeSlice.prototype = {
 	 */
 	updateGeometry: function () {
 
-		var extracted = this.volume.extractPerpendicularPlane( this.axis, this.index );
+		const extracted = this.volume.extractPerpendicularPlane( this.axis, this.index );
 		this.sliceAccess = extracted.sliceAccess;
 		this.jLength = extracted.jLength;
 		this.iLength = extracted.iLength;
@@ -209,14 +209,14 @@ VolumeSlice.prototype = {
 
 		if ( this.geometry ) this.geometry.dispose(); // dispose existing geometry
 
-		this.geometry = new PlaneBufferGeometry( extracted.planeWidth, extracted.planeHeight );
+		this.geometry = new PlaneGeometry( extracted.planeWidth, extracted.planeHeight );
 
 		if ( this.mesh ) {
 
 			this.mesh.geometry = this.geometry;
 			//reset mesh matrix
 			this.mesh.matrix.identity();
-			this.mesh.applyMatrix( this.matrix );
+			this.mesh.applyMatrix4( this.matrix );
 
 		}
 

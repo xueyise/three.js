@@ -1,33 +1,36 @@
-/**
- * @author Temdog007 / http://github.com/Temdog007
- */
+import * as THREE from 'three';
 
+import { UIRow, UIText, UIInteger, UINumber } from './libs/ui.js';
 
-Sidebar.Geometry.TetrahedronGeometry = function ( editor, object ) {
+import { SetGeometryCommand } from './commands/SetGeometryCommand.js';
 
-	var strings = editor.strings;
+function GeometryParametersPanel( editor, object ) {
 
-	var container = new UI.Row();
+	const strings = editor.strings;
 
-	var geometry = object.geometry;
-	var parameters = geometry.parameters;
+	const signals = editor.signals;
+
+	const container = new UIRow();
+
+	const geometry = object.geometry;
+	const parameters = geometry.parameters;
 
 	// radius
 
-	var radiusRow = new UI.Row();
-	var radius = new UI.Number( parameters.radius ).onChange( update );
+	const radiusRow = new UIRow();
+	const radius = new UINumber( parameters.radius ).onChange( update );
 
-	radiusRow.add( new UI.Text( strings.getKey( 'sidebar/geometry/tetrahedron_geometry/radius' ) ).setWidth( '90px' ) );
+	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/tetrahedron_geometry/radius' ) ).setWidth( '90px' ) );
 	radiusRow.add( radius );
 
 	container.add( radiusRow );
 
 	// detail
 
-	var detailRow = new UI.Row();
-	var detail = new UI.Integer( parameters.detail ).setRange( 0, Infinity ).onChange( update );
+	const detailRow = new UIRow();
+	const detail = new UIInteger( parameters.detail ).setRange( 0, Infinity ).onChange( update );
 
-	detailRow.add( new UI.Text( strings.getKey( 'sidebar/geometry/tetrahedron_geometry/detail' ) ).setWidth( '90px' ) );
+	detailRow.add( new UIText( strings.getKey( 'sidebar/geometry/tetrahedron_geometry/detail' ) ).setWidth( '90px' ) );
 	detailRow.add( detail );
 
 	container.add( detailRow );
@@ -37,15 +40,17 @@ Sidebar.Geometry.TetrahedronGeometry = function ( editor, object ) {
 
 	function update() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE[ geometry.type ](
+		editor.execute( new SetGeometryCommand( editor, object, new THREE.TetrahedronGeometry(
 			radius.getValue(),
 			detail.getValue()
 		) ) );
+
+		signals.objectChanged.dispatch( object );
 
 	}
 
 	return container;
 
-};
+}
 
-Sidebar.Geometry.TetrahedronBufferGeometry = Sidebar.Geometry.TetrahedronGeometry;
+export { GeometryParametersPanel };

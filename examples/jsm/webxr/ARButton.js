@@ -1,29 +1,61 @@
-/**
- * @author mrdoob / http://mrdoob.com
- * @author Mugen87 / https://github.com/Mugen87
- */
+class ARButton {
 
-var ARButton = {
+	static createButton( renderer, sessionInit = {} ) {
 
-	createButton: function ( renderer ) {
+		const button = document.createElement( 'button' );
 
-		function showEnterXR( /*device*/ ) {
+		function showStartAR( /*device*/ ) {
 
-			var currentSession = null;
+			if ( sessionInit.domOverlay === undefined ) {
 
-			function onSessionStarted( session ) {
+				const overlay = document.createElement( 'div' );
+				overlay.style.display = 'none';
+				document.body.appendChild( overlay );
+
+				const svg = document.createElementNS( 'http://www.w3.org/2000/svg', 'svg' );
+				svg.setAttribute( 'width', 38 );
+				svg.setAttribute( 'height', 38 );
+				svg.style.position = 'absolute';
+				svg.style.right = '20px';
+				svg.style.top = '20px';
+				svg.addEventListener( 'click', function () {
+
+					currentSession.end();
+
+				} );
+				overlay.appendChild( svg );
+
+				const path = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
+				path.setAttribute( 'd', 'M 12,12 L 28,28 M 28,12 12,28' );
+				path.setAttribute( 'stroke', '#fff' );
+				path.setAttribute( 'stroke-width', 2 );
+				svg.appendChild( path );
+
+				if ( sessionInit.optionalFeatures === undefined ) {
+
+					sessionInit.optionalFeatures = [];
+
+				}
+
+				sessionInit.optionalFeatures.push( 'dom-overlay' );
+				sessionInit.domOverlay = { root: overlay };
+
+			}
+
+			//
+
+			let currentSession = null;
+
+			async function onSessionStarted( session ) {
 
 				session.addEventListener( 'end', onSessionEnded );
 
-				/*
-				session.updateWorldTrackingState( {
-					'planeDetectionState': { 'enabled': true }
-				} );
-				*/
-
 				renderer.xr.setReferenceSpaceType( 'local' );
-				renderer.xr.setSession( session );
+
+				await renderer.xr.setSession( session );
+
 				button.textContent = 'STOP AR';
+				sessionInit.domOverlay.root.style.display = '';
 
 				currentSession = session;
 
@@ -33,8 +65,8 @@ var ARButton = {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				renderer.xr.setSession( null );
 				button.textContent = 'START AR';
+				sessionInit.domOverlay.root.style.display = 'none';
 
 				currentSession = null;
 
@@ -66,7 +98,7 @@ var ARButton = {
 
 				if ( currentSession === null ) {
 
-					navigator.xr.requestSession( 'immersive-ar' ).then( onSessionStarted );
+					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
 
 				} else {
 
@@ -93,11 +125,21 @@ var ARButton = {
 
 		}
 
-		function showXRNotFound() {
+		function showARNotSupported() {
 
 			disableButton();
 
-			button.textContent = 'XR NOT FOUND';
+			button.textContent = 'AR NOT SUPPORTED';
+
+		}
+
+		function showARNotAllowed( exception ) {
+
+			disableButton();
+
+			console.warn( 'Exception when trying to call xr.isSessionSupported', exception );
+
+			button.textContent = 'AR NOT ALLOWED';
 
 		}
 
@@ -120,38 +162,31 @@ var ARButton = {
 
 		if ( 'xr' in navigator ) {
 
-			var button = document.createElement( 'button' );
+			button.id = 'ARButton';
 			button.style.display = 'none';
 
 			stylizeElement( button );
 
 			navigator.xr.isSessionSupported( 'immersive-ar' ).then( function ( supported ) {
 
-				if ( supported ) {
+				supported ? showStartAR() : showARNotSupported();
 
-					showEnterXR();
-
-				} else {
-
-					showXRNotFound();
-
-				}
-
-			} );
+			} ).catch( showARNotAllowed );
 
 			return button;
 
 		} else {
 
-			var message = document.createElement( 'a' );
-			message.href = 'https://immersive-web.github.io/webxr/';
+			const message = document.createElement( 'a' );
 
 			if ( window.isSecureContext === false ) {
 
+				message.href = document.location.href.replace( /^http:/, 'https:' );
 				message.innerHTML = 'WEBXR NEEDS HTTPS'; // TODO Improve message
 
 			} else {
 
+				message.href = 'https://immersiveweb.dev/';
 				message.innerHTML = 'WEBXR NOT AVAILABLE';
 
 			}
@@ -168,6 +203,6 @@ var ARButton = {
 
 	}
 
-};
+}
 
 export { ARButton };

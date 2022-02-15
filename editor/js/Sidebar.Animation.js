@@ -1,26 +1,25 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+import { UIPanel, UIBreak, UISelect, UIButton, UIText, UINumber, UIRow } from './libs/ui.js';
 
-Sidebar.Animation = function ( editor ) {
+function SidebarAnimation( editor ) {
 
-	var signals = editor.signals;
-	var mixer = editor.mixer;
+	const strings = editor.strings;
+	const signals = editor.signals;
+	const mixer = editor.mixer;
 
-	var actions = {};
+	const actions = {};
 
 	signals.objectSelected.add( function ( object ) {
 
-		var animations = editor.animations[ object !== null ? object.uuid : '' ];
+		if ( object !== null && object.animations.length > 0 ) {
 
-		if ( animations !== undefined ) {
+			const animations = object.animations;
 
 			container.setDisplay( '' );
 
-			var options = {};
-			var firstAnimation;
+			const options = {};
+			let firstAnimation;
 
-			for ( var animation of animations ) {
+			for ( const animation of animations ) {
 
 				if ( firstAnimation === undefined ) firstAnimation = animation.name;
 
@@ -31,6 +30,7 @@ Sidebar.Animation = function ( editor ) {
 
 			animationsSelect.setOptions( options );
 			animationsSelect.setValue( firstAnimation );
+			mixerTimeScaleNumber.setValue( mixer.timeScale );
 
 		} else {
 
@@ -42,9 +42,7 @@ Sidebar.Animation = function ( editor ) {
 
 	signals.objectRemoved.add( function ( object ) {
 
-		var animations = editor.animations[ object !== null ? object.uuid : '' ];
-
-		if ( animations !== undefined ) {
+		if ( object !== null && object.animations.length > 0 ) {
 
 			mixer.uncacheRoot( object );
 
@@ -62,23 +60,46 @@ Sidebar.Animation = function ( editor ) {
 
 		actions[ animationsSelect.getValue() ].stop();
 
+		signals.animationStopped.dispatch();
+
 	}
 
-	var container = new UI.Panel();
+	function changeTimeScale() {
+
+		mixer.timeScale = mixerTimeScaleNumber.getValue();
+
+	}
+
+	const container = new UIPanel();
 	container.setDisplay( 'none' );
 
-	container.add( new UI.Text( 'Animations' ).setTextTransform( 'uppercase' ) );
-	container.add( new UI.Break() );
-	container.add( new UI.Break() );
+	container.add( new UIText( strings.getKey( 'sidebar/animations' ) ).setTextTransform( 'uppercase' ) );
+	container.add( new UIBreak() );
+	container.add( new UIBreak() );
 
-	var div = new UI.Div();
-	container.add( div );
+	//
 
-	var animationsSelect = new UI.Select().setFontSize( '12px' );
-	div.add( animationsSelect );
-	div.add( new UI.Button( 'Play' ).setMarginLeft( '4px' ).onClick( playAction ) );
-	div.add( new UI.Button( 'Stop' ).setMarginLeft( '4px' ).onClick( stopAction ) );
+	const animationsRow = new UIRow();
+
+	const animationsSelect = new UISelect().setFontSize( '12px' );
+	animationsRow.add( animationsSelect );
+	animationsRow.add( new UIButton( strings.getKey( 'sidebar/animations/play' ) ).setMarginLeft( '4px' ).onClick( playAction ) );
+	animationsRow.add( new UIButton( strings.getKey( 'sidebar/animations/stop' ) ).setMarginLeft( '4px' ).onClick( stopAction ) );
+
+	container.add( animationsRow );
+
+	//
+
+	const mixerTimeScaleRow = new UIRow();
+	const mixerTimeScaleNumber = new UINumber( 0.5 ).setWidth( '60px' ).setRange( - 10, 10 ).onChange( changeTimeScale );
+
+	mixerTimeScaleRow.add( new UIText( strings.getKey( 'sidebar/animations/timescale' ) ).setWidth( '90px' ) );
+	mixerTimeScaleRow.add( mixerTimeScaleNumber );
+
+	container.add( mixerTimeScaleRow );
 
 	return container;
 
-};
+}
+
+export { SidebarAnimation };

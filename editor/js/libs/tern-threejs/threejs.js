@@ -1499,18 +1499,6 @@
       "!doc": "Creates a wireframe object that shows the edges of another object's geometry. To draw a  wireframe image showing only \"hard\" edges (edges between non-coplanar faces), see [page:EdgesHelper].",
       "!type": "fn(object: +THREE.Object3D, color: +THREE.Color)"
     },
-    "ImmediateRenderObject": {
-      "!url": "http://threejs.org/docs/#Reference/extras/objects/ImmediateRenderObject",
-      "prototype": {
-        "!proto": "THREE.Object3D.prototype",
-        "render": {
-          "!type": "fn(renderCallback: function)",
-          "!doc": "This function needs to be overridden to start the creation of the object and should call renderCallback when finished."
-        }
-      },
-      "!doc": "base class for immediate rendering objects.",
-      "!type": "fn()"
-    },
     "AmbientLight": {
       "!url": "http://threejs.org/docs/#Reference/lights/AmbientLight",
       "prototype": {
@@ -1979,7 +1967,7 @@
           "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:WebGLRenderer WebGL] renderer, but does work with the [page:CanvasRenderer Canvas] renderer."
         },
         "vertexColors": {
-          "!type": "number",
+          "!type": "bool",
           "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "fog": {
@@ -2015,7 +2003,7 @@
           "!doc": "The size of the gap. Default is 1."
         },
         "vertexColors": {
-          "!type": "boolean",
+          "!type": "bool",
           "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "fog": {
@@ -2158,12 +2146,8 @@
           "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:WebGLRenderer WebGL] renderer, but does work with the [page:CanvasRenderer Canvas] renderer."
         },
         "vertexColors": {
-          "!type": "number",
-          "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:CanvasRenderer Canvas] renderer, but does work with the [page:WebGLRenderer WebGL] renderer."
-        },
-        "skinning": {
-          "!type": "bool",
-          "!doc": "Define whether the material uses skinning. Default is false."
+          "!type": "boolean",
+          "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "morphTargets": {
           "!type": "bool",
@@ -2297,12 +2281,8 @@
           "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:WebGLRenderer WebGL] renderer, but does work with the [page:CanvasRenderer Canvas] renderer."
         },
         "vertexColors": {
-          "!type": "number",
-          "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:CanvasRenderer Canvas] renderer, but does work with the [page:WebGLRenderer WebGL] renderer."
-        },
-        "skinning": {
-          "!type": "bool",
-          "!doc": "Define whether the material uses skinning. Default is *false*."
+          "!type": "boolean",
+          "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "morphTargets": {
           "!type": "bool",
@@ -2441,12 +2421,8 @@
           "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:WebGLRenderer WebGL] renderer, but does work with the [page:CanvasRenderer Canvas] renderer."
         },
         "vertexColors": {
-          "!type": "number",
-          "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:CanvasRenderer Canvas] renderer, but does work with the [page:WebGLRenderer WebGL] renderer."
-        },
-        "skinning": {
           "!type": "bool",
-          "!doc": "Define whether the material uses skinning. Default is *false*."
+          "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "morphTargets": {
           "!type": "bool",
@@ -2482,7 +2458,7 @@
         },
         "vertexColors": {
           "!type": "bool",
-          "!doc": "This setting might not have any effect when used with certain renderers. For example, it is ignored with the [page:CanvasRenderer Canvas] renderer, but does work with the [page:WebGLRenderer WebGL] renderer."
+          "!doc": "This setting might not have any effect when used with certain renderers."
         },
         "fog": {
           "!type": "bool",
@@ -2548,12 +2524,8 @@
           "!doc": "Defines whether this material uses lighting; true to pass uniform data related to lighting to this shader"
         },
         "vertexColors": {
-          "!type": "number",
-          "!doc": "Define how the vertices are colored, by defining how the *colors* attribute gets populated. Possible values are [page:Materials THREE.NoColors], [page:Materials THREE.FaceColors] and [page:Materials THREE.VertexColors]. Default is THREE.NoColors."
-        },
-        "skinning": {
           "!type": "bool",
-          "!doc": "Define whether the material uses skinning; true to pass skinning attributes to the shader. Default is false."
+          "!doc": "Define how the vertices are colored, by defining how the *colors* attribute gets populated. Default is false."
         },
         "morphTargets": {
           "!type": "bool",
@@ -4660,14 +4632,6 @@
         "autoUpdateObjects": {
           "!type": "bool",
           "!doc": "Defines whether the renderer should auto update objects. Default is true."
-        },
-        "gammaInput": {
-          "!type": "bool",
-          "!doc": "Default is false. If set, then it expects that all textures and colors are premultiplied gamma."
-        },
-        "gammaOutput": {
-          "!type": "bool",
-          "!doc": "Default is false.  If set, then it expects that all textures and colors need to be outputted in premultiplied gamma."
         },
         "shadowMapEnabled": {
           "!type": "bool",

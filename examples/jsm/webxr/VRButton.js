@@ -1,59 +1,24 @@
-/**
- * @author mrdoob / http://mrdoob.com
- * @author Mugen87 / https://github.com/Mugen87
- */
+class VRButton {
 
-var VRButton = {
+	static createButton( renderer, options ) {
 
-	createButton: function ( renderer, options ) {
+		if ( options ) {
 
-		if ( options && options.referenceSpaceType ) {
-
-			renderer.xr.setReferenceSpaceType( options.referenceSpaceType );
+			console.error( 'THREE.VRButton: The "options" parameter has been removed. Please set the reference space type via renderer.xr.setReferenceSpaceType() instead.' );
 
 		}
 
-		function showEnterVR( device ) {
+		const button = document.createElement( 'button' );
 
-			button.style.display = '';
+		function showEnterVR( /*device*/ ) {
 
-			button.style.cursor = 'pointer';
-			button.style.left = 'calc(50% - 50px)';
-			button.style.width = '100px';
+			let currentSession = null;
 
-			button.textContent = 'ENTER_VR';
-
-			button.onmouseenter = function () {
-
-				button.style.opacity = '1.0';
-
-			};
-
-			button.onmouseleave = function () {
-
-				button.style.opacity = '0.5';
-
-			};
-
-			button.onclick = function () {
-
-				device.isPresenting ? device.exitPresent() : device.requestPresent( [ { source: renderer.domElement } ] );
-
-			};
-
-			renderer.xr.setDevice( device );
-
-		}
-
-		function showEnterXR( /*device*/ ) {
-
-			var currentSession = null;
-
-			function onSessionStarted( session ) {
+			async function onSessionStarted( session ) {
 
 				session.addEventListener( 'end', onSessionEnded );
 
-				renderer.xr.setSession( session );
+				await renderer.xr.setSession( session );
 				button.textContent = 'EXIT VR';
 
 				currentSession = session;
@@ -64,7 +29,6 @@ var VRButton = {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				renderer.xr.setSession( null );
 				button.textContent = 'ENTER VR';
 
 				currentSession = null;
@@ -104,7 +68,7 @@ var VRButton = {
 					// ('local' is always available for immersive sessions and doesn't need to
 					// be requested separately.)
 
-					var sessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor' ] };
+					const sessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor', 'hand-tracking', 'layers' ] };
 					navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( onSessionStarted );
 
 				} else {
@@ -132,21 +96,21 @@ var VRButton = {
 
 		}
 
-		function showVRNotFound() {
+		function showWebXRNotFound() {
 
 			disableButton();
 
-			button.textContent = 'VR NOT FOUND';
-
-			renderer.xr.setDevice( null );
+			button.textContent = 'VR NOT SUPPORTED';
 
 		}
 
-		function showXRNotFound() {
+		function showVRNotAllowed( exception ) {
 
 			disableButton();
 
-			button.textContent = 'VR NOT FOUND';
+			console.warn( 'Exception when trying to call xr.isSessionSupported', exception );
+
+			button.textContent = 'VR NOT ALLOWED';
 
 		}
 
@@ -169,80 +133,40 @@ var VRButton = {
 
 		if ( 'xr' in navigator ) {
 
-			var button = document.createElement( 'button' );
+			button.id = 'VRButton';
 			button.style.display = 'none';
 
 			stylizeElement( button );
 
 			navigator.xr.isSessionSupported( 'immersive-vr' ).then( function ( supported ) {
 
-				if ( supported ) {
+				supported ? showEnterVR() : showWebXRNotFound();
 
-					showEnterXR();
+				if ( supported && VRButton.xrSessionIsGranted ) {
 
-				} else {
-
-					showXRNotFound();
+					button.click();
 
 				}
 
-			} );
-
-			return button;
-
-		} else if ( 'getVRDisplays' in navigator ) {
-
-			var button = document.createElement( 'button' );
-			button.style.display = 'none';
-
-			stylizeElement( button );
-
-			window.addEventListener( 'vrdisplayconnect', function ( event ) {
-
-				showEnterVR( event.display );
-
-			}, false );
-
-			window.addEventListener( 'vrdisplaydisconnect', function ( /*event*/ ) {
-
-				showVRNotFound();
-
-			}, false );
-
-			window.addEventListener( 'vrdisplaypresentchange', function ( event ) {
-
-				button.textContent = event.display.isPresenting ? 'EXIT_VR' : 'ENTER_VR';
-
-			}, false );
-
-			window.addEventListener( 'vrdisplayactivate', function ( event ) {
-
-				event.display.requestPresent( [ { source: renderer.domElement } ] );
-
-			}, false );
-
-			navigator.getVRDisplays()
-				.then( function ( displays ) {
-
-					if ( displays.length > 0 ) {
-
-						showEnterVR( displays[ 0 ] );
-
-					} else {
-
-						showVRNotFound();
-
-					}
-
-				} ).catch( showVRNotFound );
+			} ).catch( showVRNotAllowed );
 
 			return button;
 
 		} else {
 
-			var message = document.createElement( 'a' );
-			message.href = 'https://immersive-web.github.io/webxr/';
-			message.innerHTML = 'WEBXR NOT SUPPORTED';
+			const message = document.createElement( 'a' );
+
+			if ( window.isSecureContext === false ) {
+
+				message.href = document.location.href.replace( /^http:/, 'https:' );
+				message.innerHTML = 'WEBXR NEEDS HTTPS'; // TODO Improve message
+
+			} else {
+
+				message.href = 'https://immersiveweb.dev/';
+				message.innerHTML = 'WEBXR NOT AVAILABLE';
+
+			}
 
 			message.style.left = 'calc(50% - 90px)';
 			message.style.width = '180px';
@@ -256,6 +180,24 @@ var VRButton = {
 
 	}
 
-};
+	static xrSessionIsGranted = false;
+
+	static registerSessionGrantedListener() {
+
+		if ( 'xr' in navigator ) {
+
+			navigator.xr.addEventListener( 'sessiongranted', () => {
+
+				VRButton.xrSessionIsGranted = true;
+
+			} );
+
+		}
+
+	}
+
+}
+
+VRButton.registerSessionGrantedListener();
 
 export { VRButton };

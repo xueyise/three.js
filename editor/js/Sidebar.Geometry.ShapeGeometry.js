@@ -1,35 +1,37 @@
-/**
- * @author Temdog007 / http://github.com/Temdog007
- */
+import * as THREE from 'three';
 
-Sidebar.Geometry.ShapeGeometry = function ( editor, object ) {
+import { UIRow, UIText, UIInteger, UIButton } from './libs/ui.js';
 
-	var strings = editor.strings;
+import { SetGeometryCommand } from './commands/SetGeometryCommand.js';
 
-	var container = new UI.Row();
+function GeometryParametersPanel( editor, object ) {
 
-	var geometry = object.geometry;
-	var parameters = geometry.parameters;
+	const strings = editor.strings;
+
+	const container = new UIRow();
+
+	const geometry = object.geometry;
+	const parameters = geometry.parameters;
 
 	// curveSegments
 
-	var curveSegmentsRow = new UI.Row();
-	var curveSegments = new UI.Integer( parameters.curveSegments || 12 ).onChange( changeShape ).setRange( 1, Infinity );
+	const curveSegmentsRow = new UIRow();
+	const curveSegments = new UIInteger( parameters.curveSegments || 12 ).onChange( changeShape ).setRange( 1, Infinity );
 
-	curveSegmentsRow.add( new UI.Text( strings.getKey( 'sidebar/geometry/shape_geometry/curveSegments' ) ).setWidth( '90px' ) );
+	curveSegmentsRow.add( new UIText( strings.getKey( 'sidebar/geometry/shape_geometry/curveSegments' ) ).setWidth( '90px' ) );
 	curveSegmentsRow.add( curveSegments );
 
 	container.add( curveSegmentsRow );
 
 	// to extrude
-	var button = new UI.Button( strings.getKey( 'sidebar/geometry/shape_geometry/extrude' ) ).onClick( toExtrude ).setWidth( '90px' ).setMarginLeft( '90px' );
+	const button = new UIButton( strings.getKey( 'sidebar/geometry/shape_geometry/extrude' ) ).onClick( toExtrude ).setWidth( '90px' ).setMarginLeft( '90px' );
 	container.add( button );
 
 	//
 
 	function changeShape() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE[ geometry.type ](
+		editor.execute( new SetGeometryCommand( editor, object, new THREE.ShapeGeometry(
 			parameters.shapes,
 			curveSegments.getValue()
 		) ) );
@@ -38,7 +40,7 @@ Sidebar.Geometry.ShapeGeometry = function ( editor, object ) {
 
 	function toExtrude() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE.ExtrudeBufferGeometry(
+		editor.execute( new SetGeometryCommand( editor, object, new THREE.ExtrudeGeometry(
 			parameters.shapes, {
 				curveSegments: curveSegments.getValue()
 			}
@@ -48,6 +50,6 @@ Sidebar.Geometry.ShapeGeometry = function ( editor, object ) {
 
 	return container;
 
-};
+}
 
-Sidebar.Geometry.ShapeBufferGeometry = Sidebar.Geometry.ShapeGeometry;
+export { GeometryParametersPanel };
