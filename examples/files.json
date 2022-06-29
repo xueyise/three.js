@@ -67,6 +67,7 @@
 		"webgl_lines_colors",
 		"webgl_lines_dashed",
 		"webgl_lines_fat",
+		"webgl_lines_fat_raycasting",
 		"webgl_lines_fat_wireframe",
 		"webgl_lines_sphere",
 		"webgl_loader_3dm",
@@ -84,6 +85,7 @@
 		"webgl_loader_gcode",
 		"webgl_loader_gltf",
 		"webgl_loader_gltf_compressed",
+		"webgl_loader_gltf_iridescence",
 		"webgl_loader_gltf_sheen",
 		"webgl_loader_gltf_transmission",
 		"webgl_loader_gltf_variants",
@@ -194,8 +196,9 @@
 		"webgl_points_sprites",
 		"webgl_points_waves",
 		"webgl_portal",
-		"webgl_raycast_sprite",
-		"webgl_raycast_texture",
+		"webgl_raycaster_bvh",
+		"webgl_raycaster_sprite",
+		"webgl_raycaster_texture",
 		"webgl_read_float_buffer",
 		"webgl_refraction",
 		"webgl_rtt",
@@ -252,7 +255,6 @@
 		"webgl_postprocessing_sobel",
 		"webgl_postprocessing_ssao",
 		"webgl_postprocessing_ssr",
-		"webgl_postprocessing_ssrr",
 		"webgl_postprocessing_taa",
 		"webgl_postprocessing_unreal_bloom",
 		"webgl_postprocessing_unreal_bloom_selective"
@@ -308,15 +310,23 @@
 	],
 	"webgpu": [
 		"webgpu_compute",
+		"webgpu_cubemap_adjustments",
+		"webgpu_cubemap_mix",
+		"webgpu_depth_texture",
+		"webgpu_instance_mesh",
 		"webgpu_instance_uniform",
 		"webgpu_lights_custom",
 		"webgpu_lights_selective",
+		"webgpu_loader_gltf",
 		"webgpu_materials",
 		"webgpu_nodes_playground",
+		"webgpu_particles",
 		"webgpu_rtt",
 		"webgpu_sandbox",
 		"webgpu_skinning",
-		"webgpu_skinning_points"
+		"webgpu_skinning_instancing",
+		"webgpu_skinning_points",
+		"webgpu_sprites"
 	],
 	"webaudio": [
 		"webaudio_orientation",
@@ -326,6 +336,7 @@
 	],
 	"webxr": [
 		"webxr_ar_cones",
+		"webxr_ar_dragging",
 		"webxr_ar_hittest",
 		"webxr_ar_lighting",
 		"webxr_ar_paint",
@@ -346,6 +357,7 @@
 		"webxr_vr_rollercoaster",
 		"webxr_vr_sandbox",
 		"webxr_vr_sculpt",
+		"webxr_vr_teleport",
 		"webxr_vr_video"
 	],
 	"games": [

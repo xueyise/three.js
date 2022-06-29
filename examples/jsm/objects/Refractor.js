@@ -18,7 +18,10 @@ class Refractor extends Mesh {
 
 		super( geometry );
 
+		this.isRefractor = true;
+
 		this.type = 'Refractor';
+		this.camera = new PerspectiveCamera();
 
 		const scope = this;
 
@@ -31,7 +34,7 @@ class Refractor extends Mesh {
 
 		//
 
-		const virtualCamera = new PerspectiveCamera();
+		const virtualCamera = this.camera;
 		virtualCamera.matrixAutoUpdate = false;
 		virtualCamera.userData.refractor = true;
 
@@ -259,8 +262,6 @@ class Refractor extends Mesh {
 
 }
 
-Refractor.prototype.isRefractor = true;
-
 Refractor.RefractorShader = {
 
 	uniforms: {
@@ -315,6 +316,8 @@ Refractor.RefractorShader = {
 
 			vec4 base = texture2DProj( tDiffuse, vUv );
 			gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
+
+			#include <encodings_fragment>
 
 		}`
 
